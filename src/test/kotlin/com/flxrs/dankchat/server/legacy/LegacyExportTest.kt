@@ -48,9 +48,9 @@ class LegacyExportTest {
         legacyDir.resolve("danks.json").writeText(
             """
             [
-              {"type": "DuckerZ", "url": "https://example.com/ente.gif", "users": ["400"]},
-              {"type": "DankChat Supporter", "url": "https://example.com/dank.png", "users": ["500"]},
-              {"type": "FeelsDankMan", "url": "https://example.com/crayon.gif", "users": []}
+              {"type": "DuckerZ", "url": "https://flxrs.com/dankchat/badges/ente.gif", "users": ["400"]},
+              {"type": "DankChat Supporter", "url": "https://flxrs.com/dankchat/badges/dank.png", "users": ["500"]},
+              {"type": "FeelsDankMan", "url": "https://flxrs.com/dankchat/badges/crayon.gif", "users": []}
             ]
             """.trimIndent(),
         )
@@ -80,5 +80,6 @@ class LegacyExportTest {
                     ),
                 ),
             ).body("badges.id", hasItems("duckerz", "feelsdankman"))
+            .body("badges.find { it.id == 'duckerz' }.url", equalTo("https://api.dank.chat/badges/ente.gif"))
     }
 }

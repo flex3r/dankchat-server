@@ -10,7 +10,9 @@ import jakarta.enterprise.event.TransactionPhase
 import org.jboss.logging.Logger
 
 @ApplicationScoped
-class BadgeSnapshotService {
+class BadgeSnapshotService(
+    private val config: BadgesConfig,
+) {
     @Volatile
     private var snapshot: BadgeSnapshot = BadgeSnapshot.EMPTY
 
@@ -42,8 +44,9 @@ class BadgeSnapshotService {
                 .list("hideBadges = true or selectedBadgeId is not null")
                 .associate { it.twitchId to BadgePreference(selectedBadgeId = it.selectedBadgeId, hideBadges = it.hideBadges) }
 
+        val imageBaseUrl = config.imageBaseUrl().trimEnd('/')
         return BadgesResponseDto(
-            badges = badges.map { BadgeDto(id = it.id, title = it.title, url = it.imageUrl) },
+            badges = badges.map { BadgeDto(id = it.id, title = it.title, url = "$imageBaseUrl/${it.image}") },
             users = selectBadges(priorities = badges.associate { it.id to it.priority }, holdings = holdings, preferences = preferences),
         )
     }

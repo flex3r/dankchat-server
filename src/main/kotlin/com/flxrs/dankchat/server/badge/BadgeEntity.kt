@@ -16,8 +16,7 @@ class BadgeEntity : PanacheEntityBase {
 
     lateinit var title: String
 
-    @Column(name = "image_url")
-    lateinit var imageUrl: String
+    lateinit var image: String
 
     var priority: Int = 0
 

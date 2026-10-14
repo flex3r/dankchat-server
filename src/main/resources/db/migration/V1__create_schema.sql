@@ -2,7 +2,7 @@ create table badges
 (
     id         varchar(64) primary key,
     title      varchar(128) not null,
-    image_url  varchar(512) not null,
+    image      varchar(255) not null,
     priority   integer      not null default 0,
     created_at timestamptz  not null default now()
 );

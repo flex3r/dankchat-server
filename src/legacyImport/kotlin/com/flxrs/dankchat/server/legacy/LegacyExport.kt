@@ -29,6 +29,7 @@ data class LegacyData(
 
 private const val DEVELOPER_TWITCH_ID = "73697410"
 private const val CUSTOM_BADGE_PRIORITY = 100
+private const val LEGACY_IMAGE_BASE_URL = "https://flxrs.com/dankchat/badges/"
 
 private val systemBadgeIdsByTitle =
     mapOf(
@@ -104,9 +105,9 @@ fun toSql(data: LegacyData): String {
         appendLine("begin;")
         customBadges.forEach { badge ->
             appendLine(
-                "insert into badges (id, title, image_url, priority) values (${sql(
+                "insert into badges (id, title, image, priority) values (${sql(
                     badgeSlug(badge.type),
-                )}, ${sql(badge.type)}, ${sql(badge.url)}, $CUSTOM_BADGE_PRIORITY) on conflict (id) do nothing;",
+                )}, ${sql(badge.type)}, ${sql(imageFileName(badge.url))}, $CUSTOM_BADGE_PRIORITY) on conflict (id) do nothing;",
             )
         }
         userIds.forEach { twitchId ->
@@ -130,6 +131,11 @@ fun toSql(data: LegacyData): String {
         }
         appendLine("commit;")
     }
+}
+
+private fun imageFileName(url: String): String {
+    require(url.startsWith(LEGACY_IMAGE_BASE_URL)) { "Badge image $url is not hosted under $LEGACY_IMAGE_BASE_URL" }
+    return url.removePrefix(LEGACY_IMAGE_BASE_URL)
 }
 
 fun badgeSlug(title: String): String = title

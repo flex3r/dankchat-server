@@ -33,7 +33,7 @@ Format with `./gradlew spotlessApply`.
 
 ```json
 {
-  "badges": [{ "id": "supporter", "title": "DankChat Supporter", "url": "https://flxrs.com/dankchat/badges/dank.png" }],
+  "badges": [{ "id": "supporter", "title": "DankChat Supporter", "url": "https://api.dank.chat/badges/dank.png" }],
   "users": { "73697410": "developer" }
 }
 ```
