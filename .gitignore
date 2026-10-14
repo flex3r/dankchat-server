@@ -1,0 +1,9 @@
+.gradle/
+build/
+.idea/
+*.iml
+.kotlin/
+.quarkus/
+.env
+*.local.properties
+legacy-export/
