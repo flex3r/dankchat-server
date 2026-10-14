@@ -31,6 +31,7 @@ dependencies {
     implementation(libs.quarkus.flyway.postgresql)
     implementation(libs.quarkus.scheduler)
     implementation(libs.quarkus.smallrye.health)
+    implementation(libs.quarkus.container.image.jib)
 
     testImplementation(libs.quarkus.junit)
     testImplementation(libs.quarkus.junit.mockito)

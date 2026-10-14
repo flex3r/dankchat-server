@@ -1,0 +1,50 @@
+name: dankchat-server
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: "3"
+
+services:
+  app:
+    image: ghcr.io/flex3r/dankchat-server:${TAG:?TAG is not set}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://db:5432/dankchat
+      QUARKUS_DATASOURCE_USERNAME: dankchat
+      QUARKUS_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is not set}
+      SE_TOKEN: ${SE_TOKEN:-}
+      JAVA_MAX_MEM_RATIO: 50
+    ports:
+      - 127.0.0.1:18080:8080
+    mem_limit: 768m
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost:8080/q/health/ready"]
+      interval: 10s
+      timeout: 3s
+      start_period: 60s
+      retries: 3
+    logging: *logging
+
+  db:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: dankchat
+      POSTGRES_USER: dankchat
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is not set}
+    volumes:
+      - db:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "dankchat", "-d", "dankchat"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    logging: *logging
+
+volumes:
+  db:
