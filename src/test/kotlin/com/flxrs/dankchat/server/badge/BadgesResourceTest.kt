@@ -71,6 +71,22 @@ class BadgesResourceTest {
     }
 
     @Test
+    fun `answers not modified for a weakened etag in a list`() {
+        val etag = given()
+            .get("/v1/badges")
+            .then()
+            .extract()
+            .header("ETag")
+
+        given()
+            .header("If-None-Match", "\"stale\", W/$etag")
+            .get("/v1/badges")
+            .then()
+            .statusCode(304)
+            .header("ETag", etag)
+    }
+
+    @Test
     fun `snapshot updates once a change commits`() {
         val etag = given()
             .get("/v1/badges")
