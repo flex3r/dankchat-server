@@ -29,8 +29,7 @@ curl -fsSL "https://raw.githubusercontent.com/flex3r/dankchat-server/$sha/deploy
 mv compose.yaml.new compose.yaml
 set_tag "$sha"
 
-docker compose pull --quiet
-if ! docker compose up --detach --wait --remove-orphans; then
+if ! { docker compose pull --quiet && docker compose up --detach --wait --remove-orphans; }; then
   if [[ -n $previous && -f compose.yaml.previous ]]; then
     echo "Deploy of $sha failed, rolling back to $previous" >&2
     mv compose.yaml.previous compose.yaml
