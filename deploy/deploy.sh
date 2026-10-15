@@ -1,19 +1,14 @@
 #!/usr/bin/env bash
-# SSH forced command of the deploy user: "deploy <commit sha> <github user>", GHCR token on stdin.
+# SSH forced command of the deploy user: "deploy <commit sha>".
 set -euo pipefail
 
 cd "$(dirname "$0")"
 
-read -r command sha user extra <<< "${SSH_ORIGINAL_COMMAND:-}"
-if [[ $command != deploy || ! $sha =~ ^[0-9a-f]{40}$ || ! $user =~ ^[A-Za-z0-9-]+$ || -n $extra ]]; then
-  echo "usage: deploy <commit sha> <github user>" >&2
+read -r command sha extra <<< "${SSH_ORIGINAL_COMMAND:-}"
+if [[ $command != deploy || ! $sha =~ ^[0-9a-f]{40}$ || -n $extra ]]; then
+  echo "usage: deploy <commit sha>" >&2
   exit 2
 fi
-
-DOCKER_CONFIG=$(mktemp -d)
-export DOCKER_CONFIG
-trap 'rm -rf "$DOCKER_CONFIG"' EXIT
-docker login ghcr.io --username "$user" --password-stdin
 
 set_tag() {
   if grep -q '^TAG=' .env; then

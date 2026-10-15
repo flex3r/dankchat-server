@@ -38,18 +38,16 @@ jobs:
     concurrency:
       group: production
       cancel-in-progress: false
-    permissions:
-      packages: read
+    permissions: {}
     steps:
       - name: Deploy
         env:
           DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
-          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           install -m 700 -d ~/.ssh
           printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
-          printf '%s' "$GHCR_TOKEN" | ssh "deploy@$DEPLOY_HOST" deploy "$GITHUB_SHA" "$GITHUB_ACTOR"
+          ssh "deploy@$DEPLOY_HOST" deploy "$GITHUB_SHA"
