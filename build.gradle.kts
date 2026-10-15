@@ -27,14 +27,19 @@ dependencies {
     implementation(libs.quarkus.rest.client.kotlin.serialization)
     implementation(libs.quarkus.hibernate.orm.panache.kotlin)
     implementation(libs.quarkus.jdbc.postgresql)
+    implementation(libs.quarkus.cache)
     implementation(libs.quarkus.flyway)
     implementation(libs.quarkus.flyway.postgresql)
     implementation(libs.quarkus.scheduler)
     implementation(libs.quarkus.smallrye.health)
     implementation(libs.quarkus.container.image.jib)
+    implementation(libs.quarkus.oidc)
+    implementation(libs.quarkus.rest.client.oidc.filter)
+    implementation(libs.quarkus.quinoa)
 
     testImplementation(libs.quarkus.junit)
     testImplementation(libs.quarkus.junit.mockito)
+    testImplementation(libs.quarkus.test.security.oidc)
     testImplementation(libs.rest.assured)
     testImplementation(libs.kotlin.test)
     testImplementation(legacyImport.output)
@@ -66,6 +71,7 @@ tasks.register<JavaExec>("legacyExport") {
     args(
         providers.gradleProperty("legacyDir").orNull ?: "",
         providers.gradleProperty("legacyOut").orNull ?: "",
+        providers.gradleProperty("legacyImages").orNull ?: "",
     )
 }
 

@@ -58,7 +58,9 @@ class LegacyExportTest {
 
     @Test
     fun `legacy data maps onto badges and applies idempotently`() {
-        val sql = toSql(readLegacyData(legacyDir))
+        val imagesDir = legacyDir.resolve("badges").apply { mkdirs() }
+        imagesDir.resolve("ente.gif").writeBytes("GIF89a-ente".toByteArray())
+        val sql = toSql(readLegacyData(legacyDir), readLegacyImages(imagesDir))
         repeat(2) {
             dataSource.connection.use { connection -> connection.createStatement().use { it.execute(sql) } }
         }
@@ -81,5 +83,12 @@ class LegacyExportTest {
                 ),
             ).body("badges.id", hasItems("duckerz", "feelsdankman"))
             .body("badges.find { it.id == 'duckerz' }.url", equalTo("https://api.dank.chat/badges/ente.gif"))
+
+        given()
+            .get("/badges/ente.gif")
+            .then()
+            .statusCode(200)
+            .contentType("image/gif")
+            .body(equalTo("GIF89a-ente"))
     }
 }

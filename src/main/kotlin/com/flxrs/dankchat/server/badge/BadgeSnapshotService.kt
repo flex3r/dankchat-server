@@ -14,10 +14,16 @@ class BadgeSnapshotService(
     private val config: BadgesConfig,
 ) {
     @Volatile
-    private var snapshot: BadgeSnapshot = BadgeSnapshot.EMPTY
+    private var currentSnapshot: BadgeSnapshot = BadgeSnapshot.EMPTY
+
+    @Volatile
+    private var legacySnapshot: BadgeSnapshot = BadgeSnapshot.EMPTY_LEGACY
 
     val current: BadgeSnapshot
-        get() = snapshot
+        get() = currentSnapshot
+
+    val legacy: BadgeSnapshot
+        get() = legacySnapshot
 
     @Startup
     fun init() {
@@ -33,7 +39,9 @@ class BadgeSnapshotService(
 
     @Synchronized
     fun rebuild() {
-        snapshot = QuarkusTransaction.requiringNew().call { BadgeSnapshot.from(loadResponse()) }
+        val response = QuarkusTransaction.requiringNew().call { loadResponse() }
+        currentSnapshot = BadgeSnapshot.from(response)
+        legacySnapshot = BadgeSnapshot.from(response.toLegacyBadges())
     }
 
     private fun loadResponse(): BadgesResponseDto {
@@ -44,9 +52,8 @@ class BadgeSnapshotService(
                 .list("hideBadges = true or selectedBadgeId is not null")
                 .associate { it.twitchId to BadgePreference(selectedBadgeId = it.selectedBadgeId, hideBadges = it.hideBadges) }
 
-        val imageBaseUrl = config.imageBaseUrl().trimEnd('/')
         return BadgesResponseDto(
-            badges = badges.map { BadgeDto(id = it.id, title = it.title, url = "$imageBaseUrl/${it.image}") },
+            badges = badges.map { BadgeDto(id = it.id, title = it.title, url = config.imageUrl(it.image)) },
             users = selectBadges(priorities = badges.associate { it.id to it.priority }, holdings = holdings, preferences = preferences),
         )
     }

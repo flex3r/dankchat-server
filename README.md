@@ -1,10 +1,12 @@
 # dankchat-server
 
-Backend for [DankChat](https://github.com/flex3r/DankChat): serves DankChat badges and polls StreamElements donations for supporter badges.
+Backend for [DankChat](https://github.com/flex3r/DankChat): serves DankChat badges, polls StreamElements donations for supporter badges and hosts [dank.chat](https://dank.chat), where users pick their badge and manage their data.
 
 ## Development
 
-Requires JDK 21 and a running Docker daemon (Quarkus Dev Services starts PostgreSQL automatically).
+Requires JDK 21 and a running Docker daemon (Quarkus Dev Services starts PostgreSQL automatically). The website in `src/main/webui` is built with Node, which Quinoa downloads during the build.
+
+To sign in locally, put `TWITCH_CLIENT_ID` and `TWITCH_CLIENT_SECRET` into a `.env` file. The Twitch application needs `http://localhost:8080/login/callback` as a redirect URL.
 
 Dev mode with live reload:
 
@@ -26,6 +28,7 @@ Format with `./gradlew spotlessApply`.
 |---|---|
 | `QUARKUS_DATASOURCE_JDBC_URL`, `QUARKUS_DATASOURCE_USERNAME`, `QUARKUS_DATASOURCE_PASSWORD` | PostgreSQL connection in production |
 | `SE_TOKEN` | StreamElements JWT; donation polling is skipped without it |
+| `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET` | Twitch application for signing in on the website |
 
 ## API
 

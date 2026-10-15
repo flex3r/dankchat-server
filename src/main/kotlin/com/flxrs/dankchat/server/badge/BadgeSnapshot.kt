@@ -10,9 +10,13 @@ class BadgeSnapshot private constructor(
 ) {
     companion object {
         val EMPTY = from(BadgesResponseDto(badges = emptyList(), users = emptyMap()))
+        val EMPTY_LEGACY = from(emptyList())
 
-        fun from(response: BadgesResponseDto): BadgeSnapshot {
-            val body = Json.encodeToString(response)
+        fun from(response: BadgesResponseDto): BadgeSnapshot = of(Json.encodeToString(response))
+
+        fun from(legacyBadges: List<LegacyBadgeDto>): BadgeSnapshot = of(Json.encodeToString(legacyBadges))
+
+        private fun of(body: String): BadgeSnapshot {
             val hash = MessageDigest.getInstance("SHA-256").digest(body.toByteArray())
             return BadgeSnapshot(body = body, etag = HexFormat.of().formatHex(hash))
         }

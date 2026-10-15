@@ -6,3 +6,5 @@ import io.smallrye.config.ConfigMapping
 interface BadgesConfig {
     fun imageBaseUrl(): String
 }
+
+fun BadgesConfig.imageUrl(image: String): String = "${imageBaseUrl().trimEnd('/')}/$image"

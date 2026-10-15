@@ -1,5 +1,6 @@
 package com.flxrs.dankchat.server.donation
 
+import com.flxrs.dankchat.server.twitch.TwitchUsers
 import io.quarkus.runtime.Startup
 import io.quarkus.scheduler.Scheduled
 import jakarta.enterprise.context.ApplicationScoped
@@ -12,7 +13,7 @@ import kotlin.jvm.optionals.getOrNull
 @ApplicationScoped
 class DonationPoller(
     @param:RestClient private val streamElements: StreamElementsApi,
-    @param:RestClient private val ivr: IvrApi,
+    private val twitchUsers: TwitchUsers,
     private val config: StreamElementsConfig,
     private val donations: DonationService,
 ) {
@@ -33,10 +34,11 @@ class DonationPoller(
         val token = config.token().getOrNull() ?: return
         val authorization = "Bearer $token"
         val known = donations.knownChannelIds()
+        val erased = donations.erasedChannelHashes()
         val newDonors =
             fetchTips(authorization)
                 .map { it.donation.user }
-                .filter { it.channel != null && it.channel !in known }
+                .filter { it.channel != null && it.channel !in known && channelHash(it.channel) !in erased }
                 .distinctBy { it.channel }
                 .mapNotNull { resolveDonor(it, authorization) }
 
@@ -61,7 +63,7 @@ class DonationPoller(
         authorization: String,
     ): NewDonor? {
         val channel = user.channel ?: return null
-        val twitchId = twitchIdFromStreamElements(channel, authorization) ?: twitchIdFromIvr(user.username)
+        val twitchId = twitchIdFromStreamElements(channel, authorization) ?: twitchIdFromTwitch(user.username)
         if (twitchId == null) {
             log.warn("Could not resolve Twitch id for donor ${user.username} (channel $channel)")
             return null
@@ -76,7 +78,7 @@ class DonationPoller(
         streamElements.channel(channel, authorization).takeIf { it.provider == "twitch" }?.providerId
     }
 
-    private fun twitchIdFromIvr(login: String): String? = lookup("IVR user $login") { ivr.users(login).firstOrNull()?.id }
+    private fun twitchIdFromTwitch(login: String): String? = lookup("Twitch user $login") { twitchUsers.byLogin(login)?.id }
 
     private inline fun lookup(
         description: String,

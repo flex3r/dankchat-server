@@ -4,6 +4,7 @@ build/
 *.iml
 .kotlin/
 .quarkus/
+.quinoa/
 .env
 *.local.properties
 legacy-export/

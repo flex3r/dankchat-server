@@ -8,6 +8,7 @@ import io.quarkus.test.junit.QuarkusTest
 import io.restassured.RestAssured.given
 import jakarta.enterprise.event.Event
 import jakarta.inject.Inject
+import org.hamcrest.Matchers.contains
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.hasItems
 import org.hamcrest.Matchers.matchesPattern
@@ -51,7 +52,38 @@ class BadgesResourceTest {
             .header("Cache-Control", "no-cache, public")
             .header("ETag", matchesPattern("\"[0-9a-f]{64}\""))
             .body("users", equalTo(mapOf("1" to "contributor", "2" to "supporter", "4" to "supporter")))
-            .body("badges.id", hasItems("developer", "top-supporter", "contributor", "supporter"))
+            .body("badges.id", hasItems("developer", "contributor", "supporter"))
+    }
+
+    @Test
+    fun `serves the same selection in the legacy format`() {
+        given()
+            .get("/legacy/badges")
+            .then()
+            .statusCode(200)
+            .contentType("application/json")
+            .header("Access-Control-Allow-Origin", "*")
+            .header("Cache-Control", "no-cache, public")
+            .header("ETag", matchesPattern("\"[0-9a-f]{64}\""))
+            .body("type", contains("DankChat Contributor", "DankChat Supporter"))
+            .body("url", contains("https://api.dank.chat/badges/contributor.png", "https://api.dank.chat/badges/dank.png"))
+            .body("users", contains(listOf("1"), listOf("2", "4")))
+    }
+
+    @Test
+    fun `answers not modified for a matching legacy etag`() {
+        val etag = given()
+            .get("/legacy/badges")
+            .then()
+            .extract()
+            .header("ETag")
+
+        given()
+            .header("If-None-Match", etag)
+            .get("/legacy/badges")
+            .then()
+            .statusCode(304)
+            .header("ETag", etag)
     }
 
     @Test

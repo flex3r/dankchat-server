@@ -23,6 +23,9 @@ class DonationService(
     fun knownChannelIds(): Set<String> = DonationEntity.listAll().map { it.seChannelId }.toSet()
 
     @Transactional
+    fun erasedChannelHashes(): Set<String> = ErasedDonorEntity.listAll().map { it.channelHash }.toSet()
+
+    @Transactional
     fun record(donors: List<NewDonor>) {
         donors.forEach { donor ->
             DonationEntity()

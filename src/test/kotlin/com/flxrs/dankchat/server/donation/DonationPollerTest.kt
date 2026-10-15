@@ -4,6 +4,9 @@ import com.flxrs.dankchat.server.badge.BadgeSnapshotService
 import com.flxrs.dankchat.server.badge.BadgeSource
 import com.flxrs.dankchat.server.badge.UserBadgeEntity
 import com.flxrs.dankchat.server.resetDatabase
+import com.flxrs.dankchat.server.twitch.HelixApi
+import com.flxrs.dankchat.server.twitch.HelixUserDto
+import com.flxrs.dankchat.server.twitch.HelixUsersDto
 import io.quarkus.narayana.jta.QuarkusTransaction
 import io.quarkus.test.InjectMock
 import io.quarkus.test.junit.QuarkusTest
@@ -27,7 +30,7 @@ class DonationPollerTest {
 
     @InjectMock
     @RestClient
-    lateinit var ivr: IvrApi
+    lateinit var helix: HelixApi
 
     @Inject
     lateinit var poller: DonationPoller
@@ -42,7 +45,7 @@ class DonationPollerTest {
         Mockito.`when`(streamElements.tips(CHANNEL_ID, 100, 0, AUTHORIZATION)).thenReturn(TipsDto(docs = tips, totalDocs = tips.size))
         Mockito.`when`(streamElements.channel("se1", AUTHORIZATION)).thenReturn(StreamElementsChannelDto(provider = "twitch", providerId = "111"))
         Mockito.`when`(streamElements.channel("se2", AUTHORIZATION)).thenThrow(WebApplicationException(404))
-        Mockito.`when`(ivr.users("bob")).thenReturn(listOf(IvrUserDto(id = "222")))
+        Mockito.`when`(helix.users(listOf("bob"), emptyList())).thenReturn(HelixUsersDto(listOf(HelixUserDto(id = "222", login = "bob", displayName = "Bob"))))
     }
 
     @Test
@@ -58,6 +61,17 @@ class DonationPollerTest {
         assertEquals(2, badges.size)
         verify(streamElements, times(1)).channel("se1", AUTHORIZATION)
         assertTrue(snapshots.current.body.contains("\"users\":{\"111\":\"supporter\",\"222\":\"supporter\"}"))
+    }
+
+    @Test
+    fun `skips donors who deleted their account`() {
+        QuarkusTransaction.requiringNew().run { ErasedDonorEntity().apply { channelHash = channelHash("se1") }.persist() }
+
+        poller.poll()
+
+        val donations = QuarkusTransaction.requiringNew().call { DonationEntity.listAll().map { it.seChannelId } }
+        assertEquals(listOf("se2"), donations)
+        verify(streamElements, times(0)).channel("se1", AUTHORIZATION)
     }
 
     @Test

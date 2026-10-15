@@ -19,18 +19,22 @@ class BadgesResource(
     @Produces(MediaType.APPLICATION_JSON)
     fun badges(
         @HeaderParam(HttpHeaders.IF_NONE_MATCH) ifNoneMatch: String?,
-    ): Response {
-        val snapshot = snapshots.current
-        val response = when {
-            matchesEtag(ifNoneMatch, snapshot.etag) -> Response.notModified()
-            else -> Response.ok(snapshot.body)
-        }
-        return response
-            .tag(EntityTag(snapshot.etag))
-            .header(HttpHeaders.CACHE_CONTROL, "no-cache, public")
-            .header("Access-Control-Allow-Origin", "*")
-            .build()
+    ): Response = snapshotResponse(snapshots.current, ifNoneMatch)
+}
+
+fun snapshotResponse(
+    snapshot: BadgeSnapshot,
+    ifNoneMatch: String?,
+): Response {
+    val response = when {
+        matchesEtag(ifNoneMatch, snapshot.etag) -> Response.notModified()
+        else -> Response.ok(snapshot.body)
     }
+    return response
+        .tag(EntityTag(snapshot.etag))
+        .header(HttpHeaders.CACHE_CONTROL, "no-cache, public")
+        .header("Access-Control-Allow-Origin", "*")
+        .build()
 }
 
 /** If-None-Match uses weak comparison, proxies like Cloudflare weaken ETags when they re-compress. */
