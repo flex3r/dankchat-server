@@ -236,10 +236,21 @@
 		padding: 0.6rem 1rem;
 	}
 
+	/* Same box as the header bar, so the controls sit where they do on every other page */
 	.corner {
 		position: absolute;
-		top: 0.75rem;
-		right: 1rem;
+		inset: 0 0 auto;
+		justify-content: flex-end;
+		box-sizing: border-box;
+		max-width: 720px;
+		height: calc(36px + 1.2rem);
+		margin: 0 auto;
+		padding: 0.6rem 1rem;
+		pointer-events: none;
+	}
+
+	.corner > :global(*) {
+		pointer-events: auto;
 	}
 
 	nav {
