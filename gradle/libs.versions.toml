@@ -22,6 +22,7 @@ quarkus-flyway = { module = "io.quarkus:quarkus-flyway" }
 quarkus-flyway-postgresql = { module = "io.quarkus:quarkus-flyway-postgresql" }
 quarkus-scheduler = { module = "io.quarkus:quarkus-scheduler" }
 quarkus-smallrye-health = { module = "io.quarkus:quarkus-smallrye-health" }
+quarkus-micrometer-registry-prometheus = { module = "io.quarkus:quarkus-micrometer-registry-prometheus" }
 quarkus-container-image-jib = { module = "io.quarkus:quarkus-container-image-jib" }
 quarkus-oidc = { module = "io.quarkus:quarkus-oidc" }
 quarkus-rest-client-oidc-filter = { module = "io.quarkus:quarkus-rest-client-oidc-filter" }

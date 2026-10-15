@@ -32,6 +32,7 @@ dependencies {
     implementation(libs.quarkus.flyway.postgresql)
     implementation(libs.quarkus.scheduler)
     implementation(libs.quarkus.smallrye.health)
+    implementation(libs.quarkus.micrometer.registry.prometheus)
     implementation(libs.quarkus.container.image.jib)
     implementation(libs.quarkus.oidc)
     implementation(libs.quarkus.rest.client.oidc.filter)
