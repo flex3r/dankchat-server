@@ -2,11 +2,8 @@ package com.flxrs.dankchat.server.account
 
 import com.flxrs.dankchat.server.admin.ADMIN_ROLE
 import com.flxrs.dankchat.server.twitchId
-import io.quarkus.oidc.IdToken
-import io.quarkus.oidc.OidcSession
 import io.quarkus.security.Authenticated
 import io.quarkus.security.identity.SecurityIdentity
-import jakarta.inject.Inject
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.DELETE
 import jakarta.ws.rs.GET
@@ -24,16 +21,12 @@ import org.eclipse.microprofile.jwt.JsonWebToken
 class AccountResource(
     private val identity: SecurityIdentity,
     private val accounts: AccountService,
-    private val session: OidcSession,
+    private val sessions: AccountSessions,
 ) {
-    @Inject
-    @IdToken
-    lateinit var idToken: JsonWebToken
-
     @GET
     fun account(): AccountDto = accounts.account(
         twitchId = identity.twitchId,
-        displayName = idToken.getClaim<String>("preferred_username"),
+        displayName = (identity.principal as? JsonWebToken)?.getClaim<String>("preferred_username"),
         admin = identity.hasRole(ADMIN_ROLE),
     )
 
@@ -47,8 +40,7 @@ class AccountResource(
     @DELETE
     fun delete(): Response {
         accounts.delete(identity.twitchId)
-        session.logout().await().indefinitely()
-        return Response.noContent().build()
+        return Response.noContent().cookie(sessions.end(identity)).build()
     }
 
     @PUT

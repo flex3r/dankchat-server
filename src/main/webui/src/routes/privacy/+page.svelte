@@ -10,7 +10,7 @@
 
 <article>
 	<h1>Privacy policy</h1>
-	<p class="muted">Last updated October 15, 2026</p>
+	<p class="muted">Last updated October 16, 2026</p>
 
 	<p>
 		This policy covers the <a href={GITHUB_URL} target="_blank" rel="noopener">DankChat app</a>,
@@ -21,8 +21,12 @@
 
 	<h2>Android app</h2>
 	<p>
-		DankChat has no ads, analytics or crash reporting. Your login, settings and history stay on your device and are
-		never sent to us.
+		DankChat has no ads, analytics or crash reporting. Your settings and history stay on your device and are never
+		sent to us.
+	</p>
+	<p>
+		When you manage your DankChat badge in the app, it sends your Twitch login token to us. We only use it to ask
+		Twitch who you are, and never store it.
 	</p>
 	<p>
 		The app connects directly to <a
@@ -41,8 +45,8 @@
 	<h2>Data we store</h2>
 	<ul>
 		<li>
-			<strong>Your account</strong>, once you sign in on <a href="/">dank.chat</a>: Twitch user id, display name,
-			your badges and your badge choice.
+			<strong>Your account</strong>, once you sign in on <a href="/">dank.chat</a> or manage your badge in the app:
+			Twitch user id, display name, your badges and your badge choice.
 		</li>
 		<li>
 			<strong>Donors</strong>: StreamElements name, StreamElements channel id and Twitch user id, taken from tips
