@@ -80,6 +80,21 @@ class AccountResourceTest {
     }
 
     @Test
+    @TestSecurity(user = "300")
+    @OidcSecurity(claims = [Claim(key = "sub", value = "300"), Claim(key = "preferred_username", value = "Bob")])
+    fun `shows new users without storing them`() {
+        given()
+            .get("/api/me")
+            .then()
+            .statusCode(200)
+            .body("twitchId", equalTo("300"))
+            .body("displayName", equalTo("Bob"))
+            .body("choice.type", equalTo("automatic"))
+
+        assertNull(QuarkusTransaction.requiringNew().call { UserEntity.findById("300") })
+    }
+
+    @Test
     @TestSecurity(user = "100")
     @OidcSecurity(claims = [Claim(key = "sub", value = "100"), Claim(key = "preferred_username", value = "Alice")])
     fun `uses DankChat's default color for users without one`() {

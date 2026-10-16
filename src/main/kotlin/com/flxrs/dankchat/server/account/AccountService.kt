@@ -32,18 +32,19 @@ class AccountService(
     private val badgesChanged: Event<BadgesChanged>,
     private val chatColors: ChatColors,
 ) {
+    /** Only reads the account, users get stored once they choose a badge or receive one. */
     @Transactional
     fun account(
         twitchId: String,
         displayName: String?,
         admin: Boolean,
     ): AccountDto {
-        val user = UserEntity.findOrCreate(twitchId)
-        if (displayName != null && user.displayName != displayName) {
+        val user = UserEntity.findById(twitchId)
+        if (user != null && displayName != null && user.displayName != displayName) {
             user.displayName = displayName
             user.updatedAt = Instant.now()
         }
-        return user.toAccount(admin)
+        return accountOf(twitchId = twitchId, user = user, displayName = user?.displayName ?: displayName, admin = admin)
     }
 
     @Transactional
@@ -74,7 +75,7 @@ class AccountService(
         }
         user.updatedAt = Instant.now()
         badgesChanged.fire(BadgesChanged(reason = "badge choice of $twitchId"))
-        return user.toAccount(admin)
+        return accountOf(twitchId = twitchId, user = user, displayName = user.displayName, admin = admin)
     }
 
     @Transactional
@@ -114,18 +115,24 @@ class AccountService(
         badgesChanged.fire(BadgesChanged(reason = "account deletion"))
     }
 
-    private fun UserEntity.toAccount(admin: Boolean): AccountDto {
+    private fun accountOf(
+        twitchId: String,
+        user: UserEntity?,
+        displayName: String?,
+        admin: Boolean,
+    ): AccountDto {
+        val selectedBadgeId = user?.selectedBadgeId
+        val hideBadges = user?.hideBadges ?: false
         val ownedIds = UserBadgeEntity.list("twitchId", twitchId).map { it.badgeId }
         val owned =
             when {
                 ownedIds.isEmpty() -> emptyList()
                 else -> BadgeEntity.list("id in ?1", Sort.descending("priority").and("id"), ownedIds)
             }
-        val selected = selectedBadgeId
         val choice =
             when {
                 hideBadges -> BadgeChoice.Hidden
-                selected != null && selected in ownedIds -> BadgeChoice.Badge(selected)
+                selectedBadgeId != null && selectedBadgeId in ownedIds -> BadgeChoice.Badge(selectedBadgeId)
                 else -> BadgeChoice.Automatic
             }
         val shown =

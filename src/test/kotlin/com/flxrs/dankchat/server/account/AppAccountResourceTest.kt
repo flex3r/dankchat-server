@@ -17,6 +17,7 @@ import io.restassured.specification.RequestSpecification
 import jakarta.ws.rs.WebApplicationException
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.hamcrest.Matchers.contains
+import org.hamcrest.Matchers.empty
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.startsWith
 import org.junit.jupiter.api.BeforeEach
@@ -44,6 +45,7 @@ class AppAccountResourceTest {
         Mockito.`when`(twitchId.validate("OAuth $ADMIN_TOKEN")).thenReturn(TwitchValidateDto(clientId = APP_CLIENT_ID, userId = ADMIN_ID))
         Mockito.`when`(twitchId.validate("OAuth $OTHER_APP_TOKEN")).thenReturn(TwitchValidateDto(clientId = "another-app", userId = "100"))
         Mockito.`when`(twitchId.validate("OAuth $EXPIRED_TOKEN")).thenThrow(WebApplicationException(401))
+        Mockito.`when`(twitchId.validate("OAuth $NEW_USER_TOKEN")).thenReturn(TwitchValidateDto(clientId = APP_CLIENT_ID, userId = NEW_USER_ID))
         QuarkusTransaction.requiringNew().run {
             grantBadge("100", "supporter")
             grantBadge("100", "contributor")
@@ -84,6 +86,32 @@ class AppAccountResourceTest {
             .body("twitchId", equalTo("100"))
             .body("badges.id", contains("contributor", "supporter"))
             .body("choice.type", equalTo("automatic"))
+    }
+
+    @Test
+    fun `reading the account stores nothing for new users`() {
+        app(NEW_USER_TOKEN)
+            .get("/v1/me")
+            .then()
+            .statusCode(200)
+            .body("twitchId", equalTo(NEW_USER_ID))
+            .body("badges", empty<Any>())
+            .body("choice.type", equalTo("automatic"))
+
+        assertNull(QuarkusTransaction.requiringNew().call { UserEntity.findById(NEW_USER_ID) })
+    }
+
+    @Test
+    fun `choosing stores the choice for new users`() {
+        app(NEW_USER_TOKEN)
+            .contentType(ContentType.JSON)
+            .body("""{"type":"hidden"}""")
+            .put("/v1/me/badge")
+            .then()
+            .statusCode(200)
+            .body("choice.type", equalTo("hidden"))
+
+        assertEquals(true, QuarkusTransaction.requiringNew().call { UserEntity.findById(NEW_USER_ID)?.hideBadges })
     }
 
     @Test
@@ -252,5 +280,7 @@ class AppAccountResourceTest {
         private const val ADMIN_TOKEN = "admin-token"
         private const val OTHER_APP_TOKEN = "other-app-token"
         private const val EXPIRED_TOKEN = "expired-token"
+        private const val NEW_USER_TOKEN = "new-user-token"
+        private const val NEW_USER_ID = "300"
     }
 }

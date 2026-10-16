@@ -45,7 +45,7 @@
 	<h2>Data we store</h2>
 	<ul>
 		<li>
-			<strong>Your account</strong>, once you sign in on <a href="/">dank.chat</a> or manage your badge in the app:
+			<strong>Your account</strong>, once you receive a badge or choose one on <a href="/">dank.chat</a> or in the app:
 			Twitch user id, display name, your badges and your badge choice.
 		</li>
 		<li>
