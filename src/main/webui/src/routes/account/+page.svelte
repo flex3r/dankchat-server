@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { api, errorMessage } from '#lib/api.js';
 	import ChatLine from '#lib/ChatLine.svelte';
-	import { DONATE_URL } from '#lib/links.js';
 	import { deleteAccount, session, updateAccount } from '#lib/session.svelte.js';
 	import type { Account, BadgeChoice } from '#lib/types.js';
 
@@ -79,8 +78,7 @@
 			<ChatLine name={account.displayName ?? account.twitchId} badge={previewBadge} color={account.chatColor} />
 		</div>
 		{#if account.badges.length === 0}
-			<p>No DankChat badge yet. Supporters get one after donating.</p>
-			<a class="button" href={DONATE_URL} target="_blank" rel="noopener">Donate on StreamElements</a>
+			<p>No DankChat badge yet.</p>
 		{:else}
 			<fieldset class="tiles" disabled={saving}>
 				<legend class="visually-hidden">Badge</legend>
