@@ -8,7 +8,7 @@
 	import SignInLink from '#lib/SignInLink.svelte';
 	import ThemeToggle from '#lib/ThemeToggle.svelte';
 
-	const PUBLIC_PATHS = ['/', '/privacy'];
+	const PUBLIC_PATHS = ['/', '/privacy', '/delete-account'];
 
 	let { children }: { children: Snippet } = $props();
 	let error = $state<string | null>(null);
@@ -78,6 +78,7 @@
 		<a href={FDROID_URL} target="_blank" rel="noopener">F-Droid</a>
 	{/if}
 	<a href="/privacy">Privacy</a>
+	<a href="/delete-account">Delete account</a>
 </footer>
 
 <style>
