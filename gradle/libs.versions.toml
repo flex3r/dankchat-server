@@ -27,6 +27,7 @@ quarkus-container-image-jib = { module = "io.quarkus:quarkus-container-image-jib
 quarkus-oidc = { module = "io.quarkus:quarkus-oidc" }
 quarkus-rest-client-oidc-filter = { module = "io.quarkus:quarkus-rest-client-oidc-filter" }
 quarkus-quinoa = { module = "io.quarkiverse.quinoa:quarkus-quinoa", version.ref = "quinoa" }
+quarkus-quinoa-testing = { module = "io.quarkiverse.quinoa:quarkus-quinoa-testing", version.ref = "quinoa" }
 quarkus-test-security-oidc = { module = "io.quarkus:quarkus-test-security-oidc" }
 quarkus-arc = { module = "io.quarkus:quarkus-arc" }
 quarkus-junit = { module = "io.quarkus:quarkus-junit" }

@@ -40,6 +40,7 @@ dependencies {
 
     testImplementation(libs.quarkus.junit)
     testImplementation(libs.quarkus.junit.mockito)
+    testImplementation(libs.quarkus.quinoa.testing)
     testImplementation(libs.quarkus.test.security.oidc)
     testImplementation(libs.rest.assured)
     testImplementation(libs.kotlin.test)
