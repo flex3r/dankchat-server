@@ -262,8 +262,9 @@
 
 	footer {
 		display: flex;
+		flex-wrap: wrap;
 		justify-content: center;
-		gap: 1.5rem;
+		gap: 0.75rem 1.5rem;
 		padding: 1.5rem 1rem;
 		border-top: 1px solid var(--border);
 		font-size: 0.9rem;
@@ -272,6 +273,7 @@
 	footer a {
 		color: var(--muted);
 		text-decoration: none;
+		white-space: nowrap;
 	}
 
 	footer a:hover {
