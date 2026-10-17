@@ -14,6 +14,7 @@ import com.flxrs.dankchat.server.donation.DonationEntity
 import com.flxrs.dankchat.server.donation.ErasedDonorEntity
 import com.flxrs.dankchat.server.donation.channelHash
 import com.flxrs.dankchat.server.twitch.ChatColors
+import com.flxrs.dankchat.server.twitch.TwitchUsers
 import com.flxrs.dankchat.server.twitch.defaultChatColor
 import com.flxrs.dankchat.server.user.UserEntity
 import io.quarkus.panache.common.Sort
@@ -31,8 +32,12 @@ class AccountService(
     private val badgesConfig: BadgesConfig,
     private val badgesChanged: Event<BadgesChanged>,
     private val chatColors: ChatColors,
+    private val twitchUsers: TwitchUsers,
 ) {
-    /** Only reads the account, users get stored once they choose a badge or receive one. */
+    /**
+     * Only reads the account, users get stored once they choose a badge or receive one.
+     * Sign-ins without a display name, like the app's, fall back to the stored one, then to Twitch.
+     */
     @Transactional
     fun account(
         twitchId: String,
@@ -40,11 +45,12 @@ class AccountService(
         admin: Boolean,
     ): AccountDto {
         val user = UserEntity.findById(twitchId)
-        if (user != null && displayName != null && user.displayName != displayName) {
-            user.displayName = displayName
+        val name = displayName ?: user?.displayName ?: twitchDisplayName(twitchId)
+        if (user != null && name != null && user.displayName != name) {
+            user.displayName = name
             user.updatedAt = Instant.now()
         }
-        return accountOf(twitchId = twitchId, user = user, displayName = user?.displayName ?: displayName, admin = admin)
+        return accountOf(twitchId = twitchId, user = user, displayName = name, admin = admin)
     }
 
     @Transactional
@@ -151,6 +157,16 @@ class AccountService(
             shownBadgeId = shown,
             chatColor = chatColor(twitchId),
         )
+    }
+
+    private fun twitchDisplayName(twitchId: String): String? = try {
+        twitchUsers.byIds(listOf(twitchId)).firstOrNull()?.displayName
+    } catch (e: WebApplicationException) {
+        log.warn("Display name lookup for $twitchId failed with ${e.response.status}")
+        null
+    } catch (e: ProcessingException) {
+        log.warn("Display name lookup for $twitchId failed", e)
+        null
     }
 
     private fun chatColor(twitchId: String): String = try {

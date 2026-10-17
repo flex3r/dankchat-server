@@ -5,6 +5,8 @@ import com.flxrs.dankchat.server.grantBadge
 import com.flxrs.dankchat.server.resetDatabase
 import com.flxrs.dankchat.server.twitch.HelixApi
 import com.flxrs.dankchat.server.twitch.HelixChatColorsDto
+import com.flxrs.dankchat.server.twitch.HelixUserDto
+import com.flxrs.dankchat.server.twitch.HelixUsersDto
 import com.flxrs.dankchat.server.twitch.TwitchIdApi
 import com.flxrs.dankchat.server.twitch.TwitchValidateDto
 import com.flxrs.dankchat.server.user.UserEntity
@@ -19,6 +21,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.hamcrest.Matchers.contains
 import org.hamcrest.Matchers.empty
 import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.nullValue
 import org.hamcrest.Matchers.startsWith
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -41,6 +44,8 @@ class AppAccountResourceTest {
     fun setup() {
         resetDatabase()
         Mockito.`when`(helix.chatColors(anyList())).thenReturn(HelixChatColorsDto(emptyList()))
+        Mockito.`when`(helix.users(anyList(), anyList())).thenReturn(HelixUsersDto(emptyList()))
+        Mockito.`when`(helix.users(emptyList(), listOf("100"))).thenReturn(HelixUsersDto(listOf(HelixUserDto(id = "100", login = "alice", displayName = "Alice"))))
         Mockito.`when`(twitchId.validate("OAuth $APP_TOKEN")).thenReturn(TwitchValidateDto(clientId = APP_CLIENT_ID, userId = "100"))
         Mockito.`when`(twitchId.validate("OAuth $ADMIN_TOKEN")).thenReturn(TwitchValidateDto(clientId = APP_CLIENT_ID, userId = ADMIN_ID))
         Mockito.`when`(twitchId.validate("OAuth $OTHER_APP_TOKEN")).thenReturn(TwitchValidateDto(clientId = "another-app", userId = "100"))
@@ -84,6 +89,7 @@ class AppAccountResourceTest {
             .then()
             .statusCode(200)
             .body("twitchId", equalTo("100"))
+            .body("displayName", equalTo("Alice"))
             .body("badges.id", contains("contributor", "supporter"))
             .body("choice.type", equalTo("automatic"))
     }
@@ -164,6 +170,31 @@ class AppAccountResourceTest {
             .statusCode(200)
             .body("twitchId", equalTo("100"))
             .body("admin", equalTo(false))
+    }
+
+    @Test
+    fun `app sessions show and store the Twitch display name`() {
+        given()
+            .cookie(SESSION_COOKIE, signIn(APP_TOKEN))
+            .get("/api/me")
+            .then()
+            .statusCode(200)
+            .body("displayName", equalTo("Alice"))
+
+        assertEquals("Alice", QuarkusTransaction.requiringNew().call { UserEntity.findById("100")?.displayName })
+    }
+
+    @Test
+    fun `app sessions open the account when the display name lookup fails`() {
+        Mockito.`when`(helix.users(emptyList(), listOf("100"))).thenThrow(WebApplicationException(503))
+
+        given()
+            .cookie(SESSION_COOKIE, signIn(APP_TOKEN))
+            .get("/api/me")
+            .then()
+            .statusCode(200)
+            .body("twitchId", equalTo("100"))
+            .body("displayName", nullValue())
     }
 
     @Test

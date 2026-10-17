@@ -10,6 +10,7 @@ import com.flxrs.dankchat.server.resetDatabase
 import com.flxrs.dankchat.server.twitch.HelixApi
 import com.flxrs.dankchat.server.twitch.HelixChatColorDto
 import com.flxrs.dankchat.server.twitch.HelixChatColorsDto
+import com.flxrs.dankchat.server.twitch.HelixUsersDto
 import com.flxrs.dankchat.server.user.UserEntity
 import io.quarkus.narayana.jta.QuarkusTransaction
 import io.quarkus.test.InjectMock
@@ -45,6 +46,7 @@ class AccountResourceTest {
         resetDatabase()
         Mockito.`when`(helix.chatColors(anyList())).thenReturn(HelixChatColorsDto(emptyList()))
         Mockito.`when`(helix.chatColors(listOf("100"))).thenReturn(chatColor("#00BCD4"))
+        Mockito.`when`(helix.users(anyList(), anyList())).thenReturn(HelixUsersDto(emptyList()))
         QuarkusTransaction.requiringNew().run {
             grantBadge("100", "supporter")
             grantBadge("100", "contributor")
