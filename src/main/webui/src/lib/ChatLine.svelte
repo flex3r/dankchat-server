@@ -39,7 +39,7 @@
 				src={part.emote.url}
 				alt={part.emote.name}
 				title={part.emote.name}
-				style:height="calc(var(--emote-unit) * {part.emote.height})"
+				style:--emote-height="calc(var(--emote-unit) * {part.emote.height})"
 			/>
 		{/if}
 	{/each}
@@ -79,7 +79,10 @@
 		animation: pop 0.25s ease-out;
 	}
 
+	/* Emotes overflow into the line spacing instead of growing the line, so the text never moves */
 	.emote {
+		height: var(--emote-height);
+		margin-block: calc((1em - var(--emote-height)) / 2);
 		animation: pop 0.2s ease-out;
 	}
 
