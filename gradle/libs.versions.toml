@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.4.10"
-quarkus = "3.40.1"
+quarkus = "3.40.1.1"
 spotless = "8.10.4"
 ktlint = "1.8.0"
 detekt = "2.0.0-alpha.6"
