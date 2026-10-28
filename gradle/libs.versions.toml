@@ -1,11 +1,11 @@
 [versions]
-kotlin = "2.4.10"
+kotlin = "2.4.21"
 quarkus = "3.40.1.1"
 spotless = "8.10.4"
 ktlint = "1.8.0"
 detekt = "2.0.0-alpha.6"
 h2 = "2.5.252"
-kotlinx-serialization = "1.11.0"
+kotlinx-serialization = "1.12.0"
 quinoa = "2.9.3"
 
 [libraries]
