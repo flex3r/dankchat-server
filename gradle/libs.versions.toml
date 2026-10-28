@@ -1,12 +1,12 @@
 [versions]
 kotlin = "2.4.10"
 quarkus = "3.40.1"
-spotless = "8.10.3"
+spotless = "8.10.4"
 ktlint = "1.8.0"
 detekt = "2.0.0-alpha.6"
 h2 = "2.5.252"
 kotlinx-serialization = "1.11.0"
-quinoa = "2.9.2"
+quinoa = "2.9.3"
 
 [libraries]
 quarkus-bom = { module = "io.quarkus.platform:quarkus-bom", version.ref = "quarkus" }
