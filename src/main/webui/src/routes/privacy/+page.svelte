@@ -32,8 +32,10 @@
 		The app connects directly to <a
 			href="https://legal.twitch.com/legal/privacy-notice/"
 			target="_blank"
-			rel="noopener">Twitch</a
-		>, <a href="https://7tv.app/privacy" target="_blank" rel="noopener">7TV</a>,
+			rel="noopener"
+		>
+			Twitch
+		</a>, <a href="https://7tv.app/privacy" target="_blank" rel="noopener">7TV</a>,
 		<a href="https://betterttv.com/privacy" target="_blank" rel="noopener">BetterTTV</a>,
 		<a href="https://www.frankerfacez.com/privacy" target="_blank" rel="noopener">FrankerFaceZ</a>
 		and <a href="https://recent-messages.robotty.de/privacy" target="_blank" rel="noopener">recent-messages</a>. If
@@ -60,8 +62,10 @@
 		badge" removes you from that list. Legal basis: <a
 			href="https://gdpr-info.eu/art-6-gdpr/"
 			target="_blank"
-			rel="noopener">Art. 6(1)(b) GDPR</a
+			rel="noopener"
 		>
+			Art. 6(1)(b) GDPR
+		</a>
 		for accounts and <a href="https://gdpr-info.eu/art-6-gdpr/" target="_blank" rel="noopener">Art. 6(1)(f) GDPR</a> for
 		supporter badges.
 	</p>
@@ -78,8 +82,9 @@
 		<a href="https://www.netcup.com/en/contact/data-privacy" target="_blank" rel="noopener">netcup</a>
 		in Germany. Requests from the site and the app pass through
 		<a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">Cloudflare</a> (US, under the
-		<a href="https://www.dataprivacyframework.gov/" target="_blank" rel="noopener">EU-US Data Privacy Framework</a
-		>), which sees your IP address. We don't log requests.
+		<a href="https://www.dataprivacyframework.gov/" target="_blank" rel="noopener">
+			EU-US Data Privacy Framework
+		</a>), which sees your IP address. We don't log requests.
 	</p>
 
 	<h2>Your rights</h2>
@@ -87,10 +92,14 @@
 		You can access, correct, export or delete your data, restrict or object to its use, and complain to a <a
 			href="https://www.edpb.europa.eu/about-edpb/about-edpb/members_en"
 			target="_blank"
-			rel="noopener">data protection authority</a
-		>. Your <a href="/account">account page</a> lets you download your data and delete your account (<a
-			href="/delete-account">how to delete your account</a
-		>); for anything else, write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+			rel="noopener"
+		>
+			data protection authority
+		</a>. Your <a href="/account">account page</a> lets you download your data and delete your account (<a
+			href="/delete-account"
+		>
+			how to delete your account
+		</a>); for anything else, write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
 	</p>
 	<p>
 		Deleting your account removes your data right away, and backups expire within 14 days. We keep a one-way hash of
