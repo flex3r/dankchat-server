@@ -6,7 +6,7 @@ ktlint = "1.8.0"
 detekt = "2.0.0-alpha.6"
 h2 = "2.5.252"
 kotlinx-serialization = "1.13.0"
-quinoa = "2.9.3"
+quinoa = "4.0.0"
 
 [libraries]
 quarkus-bom = { module = "io.quarkus.platform:quarkus-bom", version.ref = "quarkus" }
